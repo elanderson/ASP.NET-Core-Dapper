@@ -26,13 +26,10 @@ namespace AspNetCoreDapper.Pages
             {
                 connection.Open();
 
-                if (connection.QueryFirstOrDefault<int?>(@"SELECT Id 
-                                                               FROM Contacts 
-                                                               WHERE Name = @Name",
-                                                         new {Name = "Charlie Plumber"}) == null)
-                {
-                    connection.Execute(@"INSERT INTO Contacts (Name, Address, City, Subregion, Email) 
-                                             VALUES (@Name, @Address, @City, @Subregion, @Email)",
+                connection.Execute("DELETE Contacts");
+
+                var seedContacts = new List<Contact>
+                                   {
                                        new Contact
                                        {
                                            Name = "Charlie Plumber",
@@ -40,13 +37,31 @@ namespace AspNetCoreDapper.Pages
                                            City = "Nashville",
                                            Subregion = "TN",
                                            Email = "cplumber@fake.com"
-                                       });
-                }
+                                       },
+                                       new Contact
+                                       {
+                                           Name = "Teddy Pierce",
+                                           Address = "6708 1st St",
+                                           City = "Nashville",
+                                           Subregion = "TN",
+                                           Email = "tpierce@fake.com"
+                                       },
+                                       new Contact
+                                       {
+                                           Name = "Kate Pierce",
+                                           Address = "6708 1st St",
+                                           City = "Nashville",
+                                           Subregion = "TN",
+                                           Email = "kpierce@fake.com"
+                                       }
+                                   };
 
-                var charile = connection.QueryFirstOrDefault<Contact>(@"SELECT Id, Name, Address, City, Subregion, Email 
-                                                                            FROM Contacts 
-                                                                            WHERE Name = @Name",
-                                                                      new {Name = "Charlie Plumber"});
+                connection.Execute(@"INSERT INTO Contacts (Name, Address, City, Subregion, Email) 
+                                         VALUES (@Name, @Address, @City, @Subregion, @Email)",
+                                   seedContacts);
+                
+                var allContacts = connection.Query<Contact>(@"SELECT Id, Name, Address, City, Subregion, Email 
+                                                                  FROM Contacts");
             }
         }
     }
